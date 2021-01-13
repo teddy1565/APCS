@@ -4,6 +4,7 @@ int main(){
     int R=0,C=0,M=0;
     while(scanf("%d %d %d",&R,&C,&M)!=EOF){
         int Content[10][10];
+        int operator[10][10];
         int M_Content[10];
         for(int i=0;i<R;i++){
             for(int j=0;j<C;j++){
@@ -15,38 +16,44 @@ int main(){
         }
         //如果 m = 0 則代表旋轉，m = 1 代表翻轉
         //旋轉時 r-1 c-1開始 翻轉時r-1 0開始
-        int C_type=0,R_type=0,flip=0;
         for(int i=0;i<M;i++){
-            if(M_Content[i]==1){
-                R_type = R_type+1%2;
-            }else{
-                C_type = C_type+1%2;
-                R_type = R_type+1%2;
-                flip = flip+1%4;
+            for(int i=0,k=R-1;i<R;i++,k--){
+                for(int j=0;j<C;j++){
+                    operator[i][j] = Content[k][j];
+                    Content[k][j]=0;
+                }
+            }
+            for(int i=0;i<R;i++){
+                for(int j=0;j<C;j++){
+                    Content[i][j] = operator[i][j];
+                    operator[i][j] = 0;
+                }
+            }
+            if(M_Content[i]==0){
+                for(int i=0;i<C;i++){
+                    for(int j=0;j<R;j++){
+                        operator[i][j] = Content[j][i];
+                        Content[j][i] = 0;
+                    }
+                }
+                R = R^C;
+                C = R^C;
+                R = R^C;
+                for(int i=0;i<R;i++){
+                    for(int j=0;j<C;j++){
+                        Content[i][j] = operator[i][j];
+                        operator[i][j] = 0;
+                    }
+                }
             }
         }
-        printf("\n");
-        if(R_type){
-            if(C_type&&flip==2){
-                
-            }else if((!C_type)&&flip==2){
-                
-            }else if(C_type&&flip==0){
-
-            }else if((!C_type)&&flip==0){
-
+        for(int i=0;i<R;i++){
+            for(int j=0;j<C;j++){
+                printf("%d ",Content[i][j]);
             }
-        }else{
-            if(C_type&&flip==2){
-                
-            }else if((!C_type)&&flip==2){
-                
-            }else if(C_type&&flip==0){
-
-            }else if((!C_type)&&flip==0){
-                
-            }
+            printf("\n");
         }
+        
     }
    
     return 0;
