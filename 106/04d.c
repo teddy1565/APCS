@@ -28,6 +28,33 @@ void buildTree(node *CurrentNode,node *p,int N,int Leng,int *A,int *B){//利用�
         }
     }
 }
+int Scanner(node *o){
+    node *s = o;
+    if(s->c!=NULL){
+        for(int i=0;i<s->childAmount;i++){
+            if(Scanner(&s->c[i]))return 1;
+        }
+    }else{
+        if(s->visit)return 1;
+        else return 0;
+    }
+    return 0;
+}
+int DFS(node *o,int max){
+    if(o->c!=NULL){
+        for(int i=0;i<o->childAmount;i++){
+            int n = DFS(&o->c[i],max);
+            max = n>max?n:max;
+        }
+    }else{
+        int counter=0;
+        
+        while(o->p!=NULL){
+
+        }
+    }
+    return 0;
+}
 void printNode(node *o){//輸出樹的數值 debug用
     printf("%d\n",o->id);
     
@@ -52,8 +79,8 @@ int main(){
         }
         node *origin = malloc(sizeof(node));
         buildTree(origin,NULL,RootN,keyin,A,B);//生成樹
-        //printf("%d\n",origin->c[0].c[0].c==NULL);
-        printNode(origin);
+        //printNode(origin);
+        //printf("%d",DFS(origin));
         free(A);
         free(B);
         A=NULL;
