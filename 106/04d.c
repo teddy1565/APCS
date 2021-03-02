@@ -69,15 +69,32 @@ int DFS_INITIAL(node *o){//將所有節點之visit初始化
     }
     return 0;
 }
-int DFS_E(node *o,int max){
-    if(o->visit==0)max++;
+// int DFS_E(node *o,int max){
+//     if(o->visit==0)max++;
+//     for(int i=0;i<o->childAmount;i++){
+//         if(o->c[i].visit==1)continue;
+//         int temp = DFS_E(&o->c[i],max);
+//         max = temp>max?temp:max;
+//     }
+//     o->visit=1;
+//     if(o->p!=NULL){
+//         int temp = DFS_E(o->p,max);
+//         max = temp>max?temp:max;
+//     }
+//     return max;
+// }
+int counter=0;
+int DFS_E(node *o){
+    if(o->visit==0)counter++;
+    o->visit=1;
     for(int i=0;i<o->childAmount;i++){
         if(o->c[i].visit==1)continue;
-        max = DFS_E(&o->c[i],max);
+        DFS_E(&o->c[i]);
     }
-    o->visit=1;
-    if(o->p!=NULL)max = DFS_E(o->p,max);
-    return max;
+    if(o->p!=NULL){
+        DFS_E(o->p);
+    }
+    return 0;
 }
 void printNode(node *o){//輸出樹的數值 debug用
     printf("id:[%d]\tvisit:[%d]\n",o->id,o->visit);
@@ -108,8 +125,10 @@ int main(){
         DFS_S(origin,0);//DFS過程初始
         t = DFS_P1(origin,t);//找出最深之子節點
         DFS_INITIAL(origin);
-        printNode(origin);
-        printf("[%d]\n",DFS_E(t->t,0));
+        // printNode(origin);
+        printf("[%d]\n",DFS_E(t->t));
+        printf("{%d}\n",counter);
+        // printNode(origin);
         // printf("\n[%d]\n",DFS(origin,0,0,temp)->id);
         free(A);
         free(B);
