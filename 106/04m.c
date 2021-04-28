@@ -48,12 +48,22 @@ node* build_tree(int **data,int n,int target,node *parent){
     list = NULL;
     return p;
 }
-void print_node(node *o,int parent){
-    printf("%d\t",o->value);
+void print_node(node *o,int parent,int mode){
+    if(mode==1)printf("%d\t",o->visit);
+    else if(mode==2)printf("%d\t",o->value);
     for(int i=0;i<o->length;i++){
         if(o->p[i].value==parent)continue;
-        print_node(&o->p[i],o->value);
+        print_node(&o->p[i],o->value,mode);
     }
+}
+int DFS(node *o){
+    int max = 0;
+    o->visit = 1;
+    for(int i=0;i<(o->length);i++){
+        if(o->p[i].visit==1)continue;
+        DFS(&o->p[i]);
+    }
+    return 0;
 }
 int main(){
     int n;
@@ -72,7 +82,8 @@ int main(){
         for(int i=0;i<o->length;i++){
             o->p[i] = *build_tree(data,n,list[i],o);
         }
-        // print_node(o,o->value);
+        DFS(o);
+        // print_node(o,o->value,1);
         printf("end\n");
     }
     return 0;
