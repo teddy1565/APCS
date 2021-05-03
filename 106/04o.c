@@ -130,6 +130,8 @@ root* DFS(node *o,int counter,root *max){
         if(counter>max->level){
             max->level = counter;
             max->p = o;
+            printf("[%d]\n",o->value);
+            return max;
         }
     }
     for(int i=0;i<o->length;i++){
@@ -156,10 +158,9 @@ int main(){
         max->p = NULL;
         root *result = DFS(o,counter,max);
         initial_node(o);
-        printf("%d:%d\n",result->level,result->p->value);
         o = result->p;
+        counter = 0;
         max->level = 0;
-        max->p = NULL;
         result = DFS(o,counter,max);
         printf("%d:%d\n",result->level,result->p->value);
         //end
