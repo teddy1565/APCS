@@ -4,7 +4,8 @@ typedef struct node{
     int value;
     int visit;
     int length;
-    struct node *p;
+    struct node *parent;
+    struct node *child;
 }node;
 int find_top(int **data,int n){
     int start = data[0][0];
@@ -38,11 +39,11 @@ node* build_tree(int **data,int n,int target,node *parent){
     p->length = get_length(data,n,target);
     p->value = target;
     p->visit=0;
-    p->p = malloc(sizeof(node)*p->length);
+    p->child = malloc(sizeof(node)*(p->length-1));
     int *list = get_list(data,n,p->value,p->length);
-    p->p[0] = *parent;
-    for(int i=1;i<(p->length);i++){
-        p->p[i] = *build_tree(data,n,list[i-1],p);
+    p->parent = parent;
+    for(int i=0;i<(p->length);++i){
+        p->child[i] = *build_tree(data,n,list[i],p);
     }
     free(list);
     list = NULL;
@@ -52,16 +53,22 @@ void print_node(node *o,int parent,int mode){
     if(mode==1)printf("%d\t",o->visit);
     else if(mode==2)printf("%d\t",o->value);
     for(int i=0;i<o->length;i++){
-        if(o->p[i].value==parent)continue;
-        print_node(&o->p[i],o->value,mode);
+        if(o->child[i].value==parent)continue;
+        print_node(&o->child[i],o->value,mode);
     }
 }
-int DFS(node *o){
-    int max = 0;
+int DFS(node *o,int counter,node *p,int *level){
     o->visit = 1;
-    for(int i=0;i<(o->length);i++){
-        if(o->p[i].visit==1)continue;
-        DFS(&o->p[i]);
+    if(o->length==1&&(o->parent->visit)==1){
+        if(counter>(*level)){
+            *level = counter;
+            p = o;
+        }
+    }
+    printf("{%d}\n",o==o->parent);
+    for(int i=0;i<((o->length-1));i++){
+        //printf("{%d}:{%d}\n",o->p[i].value,o->p[i].visit);
+        DFS(&o->child[i],counter+1,p,level);
     }
     return 0;
 }
@@ -77,13 +84,17 @@ int main(){
         o->value = find_top(data,n);
         o->length = get_length(data,n,o->value);
         o->visit = 0;
-        o->p = malloc(sizeof(node)*(o->length));
+        o->child = malloc(sizeof(node)*(o->length));
+        o->parent = o;
         int *list = get_list(data,n,o->value,o->length);
         for(int i=0;i<o->length;i++){
-            o->p[i] = *build_tree(data,n,list[i],o);
+            o->child[i] = *build_tree(data,n,list[i],o);
         }
-        DFS(o);
-        // print_node(o,o->value,1);
+        int DFS_Counter = 0;
+        node *max_p = NULL;
+        int level = 0;
+        DFS(o,DFS_Counter,max_p,&level);
+        printf("\n[%d]\n",level);
         printf("end\n");
     }
     return 0;
