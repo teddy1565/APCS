@@ -7,6 +7,10 @@ typedef struct node{
     int length;
     struct node **p;
 }node;
+typedef struct root{
+    struct node *p;
+    int level;
+}root;
 int get_length(int **data,int n,int target){
     int counter=0;
     for(int i=0;i<n-1;i++){
@@ -88,6 +92,13 @@ node *build_tree(node *list,int **data,int n){
     }
     for(int i=0;i<n;i++){
         int *numbers = get_list(data,n,list[i].value);
+        for(int j=0,o=0;j<list[i].length;j++){
+            for(int k=0;k<n;k++){
+                if(list[k].value==numbers[j]){
+                    list[i].p[o++] = &list[k];
+                }
+            }
+        }
         for(int j=0;j<list[i].length;j++){
             for(int k=0;k<n;k++){
                 if(list[k].value==numbers[j]){
@@ -96,6 +107,36 @@ node *build_tree(node *list,int **data,int n){
             }
         }
     }
+    return &list[0];
+}
+void printf_node(node *o){
+    printf("%d ",o->value);
+    o->visit=1;
+    for(int i=0;i<o->length;i++){
+        if(o->p[i]->visit==1)continue;
+        printf_node(o->p[i]);
+    }
+}
+void initial_node(node *o){
+    o->visit = 0;
+    for(int i=0;i<o->length;i++){
+        if(o->p[i]->visit==0)continue;
+        initial_node(o->p[i]);
+    }
+}
+root* DFS(node *o,int counter,root *max){
+    o->visit = 1;
+    if(o->length==1&&o->p[0]->visit==1){
+        if(counter>max->level){
+            max->level = counter;
+            max->p = o;
+        }
+    }
+    for(int i=0;i<o->length;i++){
+        if(o->p[i]->visit==1)continue;
+        DFS(o->p[i],counter+1,max);
+    }
+    return max;
 }
 int main(){
     int n;
@@ -106,12 +147,26 @@ int main(){
             scanf("%d%d",&data[i][0],&data[i][1]);
         }
         node *p = get_node_list(data,n);
-        for(int i=0;i<n;i++){
-            printf("%d ",p[i].value);
-        }
-        printf("\n");
+        node *o = build_tree(p,data,n);
+        int *level = malloc(sizeof(int));
+        level = 0;
+        int counter = 0;
+        root *max = malloc(sizeof(root));
+        max->level = 0;
+        max->p = NULL;
+        root *result = DFS(o,counter,max);
+        initial_node(o);
+        printf("%d:%d\n",result->level,result->p->value);
+        o = result->p;
+        max->level = 0;
+        max->p = NULL;
+        result = DFS(o,counter,max);
+        printf("%d:%d\n",result->level,result->p->value);
         //end
-        printf("end\n");
+        free(level);
+        level = NULL;
+        free(max);
+        max = NULL;
         for(int i=0;i<n-1;i++){
             free(data[i]);
         }
